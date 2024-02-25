@@ -11,6 +11,14 @@ public class Board {
         return _boardCoordinates;
     }
 
+    public Integer getBoardRows() {
+        return _boardCoordinates.length;
+    }
+
+    public Integer getBoardColumns() {
+        return _boardCoordinates[0].length;
+    }
+
     private List<Ship> _ships;
 
     public List<Ship> getShips() {
@@ -27,13 +35,39 @@ public class Board {
         _ships = new ArrayList<>();
     }
 
-    public boolean addShip(String shipName, Integer rowPosition, Integer columnPosition) {
+    public void addShips(Integer numberOfShips) {
+        for (int i = 1; i <= numberOfShips; i++) {
+            System.out.println("Me diga o nome do " + i + "º navio");
+            String shipName = Util.scanner.nextLine();
+
+            boolean succesfullyInserted = false;
+            do {
+                System.out.println("Em qual a linha ficará o navio " + shipName + ":");
+                Integer selectedRow = Util.persistIntegerInterval(1, getBoardRows(),
+                        "Valor da linha inserido está fora dos limites do tabuleiro, por favor insira uma linha válida:");
+
+                System.out.println("Em qual a coluna ficará o navio " + shipName + ":");
+                Integer selectedColumn = Util.persistIntegerInterval(1, getBoardColumns(),
+                        "Valor da linha inserido está fora dos limites do tabuleiro, por favor insira uma coluna válida:");
+
+                succesfullyInserted = addShip(shipName, selectedRow, selectedColumn);
+            } while (!succesfullyInserted);
+        }
+    }
+
+    private boolean addShip(String shipName, Integer rowPosition, Integer columnPosition) {
         if (rowPosition > _boardCoordinates.length || columnPosition > _boardCoordinates[0].length) {
             System.out.println(
                     "O navio " + shipName
-                            + " nao foi adicionado pois sua posicao escolhida nao e valida para o tabuleiro atual.");
+                            + " não foi adicionado pois sua posição escolhida não e válida para o tabuleiro atual.");
             return false;
         } else {
+            if (hasAnyShipOnCoordinate(rowPosition, columnPosition)) {
+                System.out.println(
+                        "O navio " + shipName
+                                + " não foi adicionado pois sua posição escolhida já tem um navio para o tabuleiro atual.");
+                return false;
+            }
             _ships.add(new Ship(shipName, rowPosition.toString(), columnPosition.toString()));
             System.out.println("Navio " + shipName + " adicionado com sucesso!");
             return true;
@@ -44,18 +78,10 @@ public class Board {
         if (choosenRow > _boardCoordinates.length || choosenColumn > _boardCoordinates[0].length) {
             return "Valor fora dos limites do tabuleiro.";
         } else {
-            if (_boardCoordinates[choosenRow - 1][choosenColumn - 1] != null) {
+            if (identifyValueOnBoard(choosenRow, choosenColumn) != null) {
                 return "Estas coordenadas ja foram atingidas, por favor escolha outra coordenada para prosseguir.";
             } else {
-                Ship hittenShip = null;
-                for (Ship ship : _ships) {
-                    if (ship.getColumnPosition().equals(choosenColumn.toString())
-                            && ship.getRowPosition().equals(choosenRow.toString())) {
-                        hittenShip = ship;
-                        break;
-                    }
-                }
-                if (hittenShip != null) {
+                if (hasAnyShipOnCoordinate(choosenColumn, choosenRow)) {
                     _boardCoordinates[choosenRow - 1][choosenColumn - 1] = "O";
                     return "O tiro acertou um navio adversario!";
                 } else {
@@ -64,6 +90,23 @@ public class Board {
                 }
             }
         }
+    }
+
+    private String identifyValueOnBoard(Integer choosenRow, Integer choosenColumn) {
+        return _boardCoordinates[choosenRow - 1][choosenColumn - 1];
+    }
+
+    private boolean hasAnyShipOnCoordinate(Integer choosenRow, Integer choosenColumn) {
+        Ship hasShip = null;
+        for (Ship ship : _ships) {
+            if (ship.getColumnPosition().equals(choosenColumn.toString())
+                    && ship.getRowPosition().equals(choosenRow.toString())) {
+                hasShip = ship;
+                break;
+            }
+        }
+
+        return hasShip != null;
     }
 
     public String printBoard() {
