@@ -22,7 +22,8 @@ public class Board {
     }
 
     public Board(Integer numberOfRows, Integer numberOfColumns) {
-        _boardCoordinates = new String[numberOfRows][numberOfColumns];
+        _boardCoordinates = new String[Math.max(3, Math.min(10, numberOfRows))][Math.max(3,
+                Math.min(10, numberOfColumns))];
         _ships = new ArrayList<>();
     }
 
@@ -43,7 +44,7 @@ public class Board {
         if (choosenRow > _boardCoordinates.length || choosenColumn > _boardCoordinates[0].length) {
             return "Valor fora dos limites do tabuleiro.";
         } else {
-            if (_boardCoordinates[choosenRow][choosenColumn] != null) {
+            if (_boardCoordinates[choosenRow - 1][choosenColumn - 1] != null) {
                 return "Estas coordenadas ja foram atingidas, por favor escolha outra coordenada para prosseguir.";
             } else {
                 Ship hittenShip = null;
@@ -55,10 +56,10 @@ public class Board {
                     }
                 }
                 if (hittenShip != null) {
-                    _boardCoordinates[choosenRow][choosenColumn] = "O";
+                    _boardCoordinates[choosenRow - 1][choosenColumn - 1] = "O";
                     return "O tiro acertou um navio adversario!";
                 } else {
-                    _boardCoordinates[choosenRow][choosenColumn] = "X";
+                    _boardCoordinates[choosenRow - 1][choosenColumn - 1] = "X";
                     return "O tiro acertou a agua.";
                 }
             }
