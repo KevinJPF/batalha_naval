@@ -13,6 +13,7 @@ public class Util {
         }
         return tryParseInt(inputText);
     }
+    
     public static Integer persistIntegerInterval(Integer minimunValue, Integer maximumValue, String errorMessage) {
         Integer inputNumber = persistStringToInteger(
                 "O número inserido é inválido, por favor insira um valor inteiro válido:");

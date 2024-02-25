@@ -33,4 +33,12 @@ public class Player {
         _playerPoints++;
         return _playerPoints;
     }
+
+    public boolean allShipsHasBeenHit() {
+        for (Ship ship : _playerBoard.getShips()) {
+            if (!ship.getWasHit()) return false;
+        }
+        return true;
+    }
+
 }

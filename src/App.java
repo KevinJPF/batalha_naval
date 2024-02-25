@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import classes.Board;
@@ -7,6 +9,8 @@ import classes.Ship;
 import classes.Util;
 
 public class App {
+    static List<Player> players = new ArrayList<>();
+
     public static void main(String[] args) throws Exception {
 
         System.out.println(
@@ -18,22 +22,21 @@ public class App {
 
         System.out.println(
                 "Vamos criar o primeiro jogador!\n");
-        Player firstPlayer = createNewPlayer(boardOptions.get("numberOfRows"), boardOptions.get("numberOfColumns"),
-                boardOptions.get("numberOfShips"));
+        players.add(createNewPlayer(boardOptions.get("numberOfRows"), boardOptions.get("numberOfColumns"),
+                boardOptions.get("numberOfShips")));
 
         System.out.println(
                 "Vamos criar o segundo jogador!\n");
-        Player secondPlayer = createNewPlayer(boardOptions.get("numberOfRows"), boardOptions.get("numberOfColumns"),
-                boardOptions.get("numberOfShips"));
+        players.add(createNewPlayer(boardOptions.get("numberOfRows"), boardOptions.get("numberOfColumns"),
+                boardOptions.get("numberOfShips")));
 
-        System.out.println("\nAtirando no tabuleiro:");
-        System.out.println(firstPlayer.getPlayerBoard().shootBoard(2, 4));
-        System.out.println(firstPlayer.getPlayerBoard().shootBoard(8, 1));
-        System.out.println(firstPlayer.getPlayerBoard().shootBoard(4, 8));
-        System.out.println(firstPlayer.getPlayerBoard().shootBoard(5, 11));
+        Player winner = gameLoop();
 
-        System.out.println("\nTabuleiro (" + firstPlayer.getPlayerName() + "):");
-        System.out.println(firstPlayer.getPlayerBoard().printBoard());
+        // Show winner
+        System.out.println("\nJogador " + winner.getPlayerName()
+                + " é o vencedor, parabéns!");
+
+        System.out.println("\nObrigado por jogar!");
     }
 
     private static Map<String, Integer> boardOptions() {
@@ -81,5 +84,30 @@ public class App {
         }
 
         return newPlayer;
+    }
+
+    private static Player gameLoop() {
+        // Game loop
+        Player winner = null;
+        int playerIndex = 0;
+        int opponentIndex = 1;
+        do {
+            // Player shoot on opponent board
+            System.out.println("\nJogador " + players.get(playerIndex).getPlayerName()
+                    + " atira no tabuleiro do jogador " + players.get(opponentIndex).getPlayerName() + ".");
+            System.out.println(players.get(opponentIndex).getPlayerBoard().shootBoard());
+
+            // Show opponent board
+            System.out.println("\nTabuleiro (" + players.get(opponentIndex).getPlayerName() + "):");
+            System.out.println(players.get(opponentIndex).getPlayerBoard().printBoard());
+
+            // Verify if opponent's ships has been hit to select player as winner
+            winner = players.get(opponentIndex).allShipsHasBeenHit() ? players.get(playerIndex) : null;
+
+            playerIndex = playerIndex == 1 ? 0 : 1;
+            opponentIndex = opponentIndex == 1 ? 0 : 1;
+        } while (winner == null);
+
+        return winner;
     }
 }
